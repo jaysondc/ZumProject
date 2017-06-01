@@ -3,12 +3,16 @@ package com.shakeup.zumproject.map;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
 
+import com.flipboard.bottomsheet.BottomSheetLayout;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.shakeup.zumproject.R;
 import com.shakeup.zumproject.model.PlaceResult;
@@ -17,8 +21,10 @@ import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
-        MapsContract.View{
+        MapsContract.View,
+        GoogleMap.OnMarkerClickListener{
 
+    private String LOG_TAG = this.getClass().getSimpleName();
     private MapsContract.Presenter mMapPresenter;
     private GoogleMap mMap;
 
@@ -73,14 +79,19 @@ public class MapsActivity extends FragmentActivity
         for (PlaceResult place : places) {
             double lat = place.getLat();
             double lng = place.getLng();
-            LatLng marker = new LatLng(lat, lng);
+            LatLng latlng = new LatLng(lat, lng);
 
-            mMap.addMarker(new MarkerOptions().position(marker)
-            .title(place.getName()));
+            MarkerOptions mo = new MarkerOptions()
+                    .position(latlng)
+                    .title(place.getName());
+
+            Marker marker = mMap.addMarker(mo);
+            // Add the ID as a marker tag to be retrieved during a click
+            marker.setTag(place.getId());
         }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(initial));
-
+        mMap.setOnMarkerClickListener(this);
     }
 
     /**
@@ -106,5 +117,24 @@ public class MapsActivity extends FragmentActivity
     @Override
     public Context getMapContext() {
         return getApplicationContext();
+    }
+
+    /*
+     * Click listener to handle marker clicks
+     */
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        String id = (String) marker.getTag();
+        Log.d(LOG_TAG, "The user clicked marker ID - " + id);
+
+        BottomSheetLayout bottomSheet = (BottomSheetLayout) findViewById(R.id.bottom_sheet);
+
+        bottomSheet
+                .showWithSheetView(LayoutInflater.from(getApplicationContext())
+                        .inflate(R.layout.fragment_detail, bottomSheet, false));
+
+        // Let the caller know that the click has been consumed
+        return true;
     }
 }
