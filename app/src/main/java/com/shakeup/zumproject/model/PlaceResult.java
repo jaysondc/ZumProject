@@ -25,7 +25,7 @@ public class PlaceResult {
     // Public constructor to map a Song JSONObject to our fields
     PlaceResult(JSONObject result) {
         try {
-            this.id = result.getString("id");
+            this.id = result.getString("place_id");
             this.name = result.getString("name");
             this.address = result.getString("vicinity");
             this.rating = result.getDouble("rating");

@@ -117,7 +117,7 @@ public class RequestQueueSingleton {
 
                             JSONArray results = jsonObj.getJSONArray("results");
 
-                            // Store guides in an array
+                            // Store places in an array
                             ArrayList<PlaceResult> resultsArray = new ArrayList<>();
 
                             for(int i = 0; i<results.length(); i++){
@@ -157,20 +157,20 @@ public class RequestQueueSingleton {
     public void requestDetails(final CustomCallbacks.PlacesDetailsCallback placesDetailsCallback,
                                String id) {
 
+        // Detail request example
+        // https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJN1t_tDeuEmsRUsoyG83frY4&key=YOUR_API_KEY
+
         // Create a request for details
-        // TODO: Change request to detail version
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
                 .authority("maps.googleapis.com")
                 .appendPath("maps")
                 .appendPath("api")
                 .appendPath("place")
-                .appendPath("nearbysearch")
+                .appendPath("details")
                 .appendPath("json")
                 .appendQueryParameter("key", BuildConfig.GOOGLE_PLACES_API_KEY)
-                .appendQueryParameter("location", "37.7577,-122.4376")
-                .appendQueryParameter("keyword", "sushi")
-                .appendQueryParameter("rankby", "distance");
+                .appendQueryParameter("placeid", id);
         String url = builder.build().toString();
 
         // Request a string response from the provided URL.
@@ -185,22 +185,15 @@ public class RequestQueueSingleton {
                         try{
                             JSONObject jsonObj = new JSONObject(response);
 
-                            JSONArray results = jsonObj.getJSONArray("results");
+                            JSONObject details = jsonObj.getJSONObject("result");
 
-                            // Store guides in an array
-                            ArrayList<PlaceResult> resultsArray = new ArrayList<>();
+                            PlaceDetails placeDetails =
+                                        new PlaceDetails(details);
 
-                            for(int i = 0; i<results.length(); i++){
-                                // Convert the JSON Object to a PlaceResult object
-                                PlaceResult placeResult =
-                                        new PlaceResult((JSONObject) results.get(i));
-                                resultsArray.add(placeResult);
-                            }
-
-                            Log.d(LOG_TAG, "JSON Parsed! Found " + resultsArray.size() + " results!");
+                            Log.d(LOG_TAG, "JSON Parsed!");
 
                             // Send the parsed data to the presenter
-                            // placesDetailsCallback.onPlaceDetailsCallback();
+                            placesDetailsCallback.onPlaceDetailsCallback(placeDetails);
 
                         } catch(Exception e){
                             Log.d(LOG_TAG, "There was an error parsing the response.");

@@ -51,7 +51,7 @@ public class MapsPresenter
         RequestQueueSingleton rq =
                 RequestQueueSingleton.getInstance(mMapView.getMapContext());
 
-        rq.requestDetails(this);
+        rq.requestDetails(this, id);
     }
 
     @Override
