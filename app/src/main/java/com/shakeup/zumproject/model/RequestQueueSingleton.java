@@ -14,6 +14,12 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.shakeup.zumproject.BuildConfig;
+import com.shakeup.zumproject.map.MapsContract;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by Jayson on 5/17/2017.
@@ -78,7 +84,7 @@ public class RequestQueueSingleton {
      * Requests data from the server and parses it into an ArrayList of results for each restaurant.
      * This request is simply searches for sushi restaurants in San Francisco
      */
-    public void requestResults() {
+    public void requestResults(final MapsContract.PlacesResultsCallback placesResultsCallback) {
 
         // Lat/Long of San Francisco - 37.7577,-122.4376
 
@@ -106,28 +112,29 @@ public class RequestQueueSingleton {
                         // Print the response
                         Log.d(LOG_TAG, "Response Received! Message: " + response);
 
-//                        try{
-//                            JSONObject jsonObj = new JSONObject(response);
-//
-//                            JSONArray results = jsonObj.getJSONArray("results");
-//
-//                            // Store guides in an array
-//                            ArrayList<Song> resultsArray = new ArrayList<>();
-//
-//                            for(int i = 0; i<results.length(); i++){
-//                                // Convert the JSON Object to a Song object
-//                                Song song = new Song((JSONObject) results.get(i));
-//                                resultsArray.add(song);
-//                            }
-//
-//                            Log.d(LOG_TAG, "JSON Parsed! Found " + resultsArray.size() + " results!");
-//
-//                            // Send the data to the presenter
-//                            searchCallback.onSearchResultsCallback(resultsArray);
-//
-//                        } catch(Exception e){
-//                            Log.d(LOG_TAG, "There was an error parsing the response.");
-//                        }
+                        try{
+                            JSONObject jsonObj = new JSONObject(response);
+
+                            JSONArray results = jsonObj.getJSONArray("results");
+
+                            // Store guides in an array
+                            ArrayList<PlaceResult> resultsArray = new ArrayList<>();
+
+                            for(int i = 0; i<results.length(); i++){
+                                // Convert the JSON Object to a PlaceResult object
+                                PlaceResult placeResult =
+                                        new PlaceResult((JSONObject) results.get(i));
+                                resultsArray.add(placeResult);
+                            }
+
+                            Log.d(LOG_TAG, "JSON Parsed! Found " + resultsArray.size() + " results!");
+
+                            // Send the parsed data to the presenter
+                            placesResultsCallback.onPlacesResultsCallback(resultsArray);
+
+                        } catch(Exception e){
+                            Log.d(LOG_TAG, "There was an error parsing the response.");
+                        }
 
                     }
                 }, new Response.ErrorListener() {
@@ -135,7 +142,8 @@ public class RequestQueueSingleton {
             public void onErrorResponse(VolleyError error) {
                 Log.d(LOG_TAG, "There was a network error.");
 
-//                searchCallback.onSearchErrorCallback();
+                // Let the calling presenter know there was a network error
+                placesResultsCallback.onPlacesErrorCallback();
             }
         });
 

@@ -15,12 +15,12 @@ public class PlaceResult {
     private String id;
     private String name;
     private String address;
-    private String lat;
-    private String lng;
+    private double lat;
+    private double lng;
     private double rating;
 
     // Public constructor to map a Song JSONObject to our fields
-    public PlaceResult(JSONObject result) {
+    PlaceResult(JSONObject result) {
         try {
             this.id = result.getString("id");
             this.name = result.getString("name");
@@ -28,10 +28,10 @@ public class PlaceResult {
             this.rating = result.getDouble("rating");
             this.lat = result.getJSONObject("geometry")
                     .getJSONObject("location")
-                    .getString("lat");
+                    .getDouble("lat");
             this.lng = result.getJSONObject("geometry")
                     .getJSONObject("location")
-                    .getString("lng");
+                    .getDouble("lng");
 
         } catch (Exception e) {
             Log.d(LOG_TAG, "There was an error parsing the Song JSONObject.");
@@ -50,11 +50,11 @@ public class PlaceResult {
         return address;
     }
 
-    public String getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public String getLng() {
+    public double getLng() {
         return lng;
     }
 
