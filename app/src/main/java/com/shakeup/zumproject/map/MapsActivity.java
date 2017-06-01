@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.flipboard.bottomsheet.BottomSheetLayout;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,6 +22,7 @@ import com.shakeup.zumproject.model.PlaceDetails;
 import com.shakeup.zumproject.model.PlaceResult;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
@@ -137,8 +141,35 @@ public class MapsActivity extends FragmentActivity
         return true;
     }
 
+    /**
+     * Load details of the place once the API response is parsed.
+     * @param place is the PlaceDetails object used to populate our view
+     */
     @Override
     public void loadPlaceDetails(PlaceDetails place) {
-        // TODO: Load place details in the bottom sheet
+        TextView nameView = (TextView) findViewById(R.id.detail_name);
+        TextView addressView = (TextView) findViewById(R.id.detail_address);
+        TextView phoneView = (TextView) findViewById(R.id.detail_phone);
+        TextView ratingView = (TextView) findViewById(R.id.detail_rating);
+        // Ideally the reviews would be a ListView or RecyclerView
+        // Placeholder for now
+        TextView reviewsView = (TextView) findViewById(R.id.detail_reviews);
+        ImageView imageView = (ImageView) findViewById(R.id.detail_photo);
+
+        nameView.setText(place.getName());
+        addressView.setText(place.getAddress());
+        phoneView.setText(place.getPhone());
+        ratingView.setText(String.format(Locale.getDefault(), "%s", place.getRating()));
+        reviewsView.setText(R.string.reviews_placeholder);
+
+        // Load the PhotoView via Glide
+//        Glide.with(this)
+//                .load(place.getPhotoUrl())
+//                .into(imageView);
+
+        // Load a placeholder because our API key is at it's limit.
+        Glide.with(this)
+                .load("http://screencrush.com/files/2012/04/avengers-wide.jpg")
+                .into(imageView);
     }
 }

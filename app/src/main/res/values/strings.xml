@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ZumProject</string>
     <string name="title_activity_maps">Map</string>
+    <string name="reviews_placeholder">REVIEWS PLACEHOLDER</string>
 </resources>
