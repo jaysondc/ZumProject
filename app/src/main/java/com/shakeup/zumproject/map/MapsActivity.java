@@ -168,6 +168,9 @@ public class MapsActivity extends FragmentActivity
 //                .into(imageView);
 
         // Load a placeholder because our API key is at it's limit.
+        // I'm also out of time to figure out the new version of Glide and its
+        // RequestOptions which are used to specify crop and transform settings
+        // So the image defaults to center fit.
         Glide.with(this)
                 .load("http://screencrush.com/files/2012/04/avengers-wide.jpg")
                 .into(imageView);
