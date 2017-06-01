@@ -2,6 +2,8 @@ package com.shakeup.zumproject.map;
 
 import android.support.annotation.NonNull;
 
+import com.shakeup.zumproject.CustomCallbacks;
+import com.shakeup.zumproject.model.PlaceDetails;
 import com.shakeup.zumproject.model.PlaceResult;
 import com.shakeup.zumproject.model.RequestQueueSingleton;
 
@@ -15,7 +17,8 @@ import java.util.ArrayList;
 
 public class MapsPresenter
         implements MapsContract.Presenter,
-        MapsContract.PlacesResultsCallback{
+        CustomCallbacks.PlacesResultsCallback,
+        CustomCallbacks.PlacesDetailsCallback{
 
     private MapsContract.View mMapView;
 
@@ -38,6 +41,19 @@ public class MapsPresenter
         rq.requestResults(this);
     }
 
+    /**
+     * Load the detail data
+     * @param id ID of the place that was clicked
+     */
+    @Override
+    public void onMarkerClick(String id) {
+        // Launch the request for Places data
+        RequestQueueSingleton rq =
+                RequestQueueSingleton.getInstance(mMapView.getMapContext());
+
+        rq.requestDetails(this);
+    }
+
     @Override
     public void onPlacesResultsCallback(ArrayList<PlaceResult> places) {
         mMapView.placeMapMarkers(places);
@@ -45,6 +61,16 @@ public class MapsPresenter
 
     @Override
     public void onPlacesErrorCallback() {
-        // Show the user a network error
+        // TODO: Show the user a network error
+    }
+
+    @Override
+    public void onPlaceDetailsCallback(PlaceDetails place) {
+        mMapView.loadPlaceDetails(place);
+    }
+
+    @Override
+    public void onPlaceDetailsErrorCallback() {
+        // TODO: Show the user a network error
     }
 }

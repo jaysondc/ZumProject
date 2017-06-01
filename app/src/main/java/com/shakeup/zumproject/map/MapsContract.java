@@ -2,6 +2,7 @@ package com.shakeup.zumproject.map;
 
 import android.content.Context;
 
+import com.shakeup.zumproject.model.PlaceDetails;
 import com.shakeup.zumproject.model.PlaceResult;
 
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ public interface MapsContract {
     interface View{
         void placeMapMarkers(ArrayList<PlaceResult> places);
 
+        void loadPlaceDetails(PlaceDetails place);
+
         void showLoading();
 
         void hideLoading();
@@ -26,12 +29,8 @@ public interface MapsContract {
 
     interface Presenter{
         void onMapReady();
-    }
 
-    interface PlacesResultsCallback {
-        void onPlacesResultsCallback(ArrayList<PlaceResult> places);
-
-        void onPlacesErrorCallback();
+        void onMarkerClick(String id);
     }
 
 }

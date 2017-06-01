@@ -7,11 +7,11 @@ import org.json.JSONObject;
 /**
  * Created by Jayson on 5/31/2017.
  *
- * PlaceResult is a java object containing a single Place result returned by the
- * Google Places Search API
+ * PlaceDegtails is a java object containing a single Place returned by the
+ * Google Places Details API
  */
 
-public class PlaceResult {
+public class PlaceDetails {
 
     private final String LOG_TAG = this.getClass().getSimpleName();
 
@@ -23,7 +23,7 @@ public class PlaceResult {
     private double rating;
 
     // Public constructor to map a Song JSONObject to our fields
-    PlaceResult(JSONObject result) {
+    PlaceDetails(JSONObject result) {
         try {
             this.id = result.getString("id");
             this.name = result.getString("name");

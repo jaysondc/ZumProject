@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.shakeup.zumproject.R;
+import com.shakeup.zumproject.model.PlaceDetails;
 import com.shakeup.zumproject.model.PlaceResult;
 
 import java.util.ArrayList;
@@ -134,7 +135,15 @@ public class MapsActivity extends FragmentActivity
                 .showWithSheetView(LayoutInflater.from(getApplicationContext())
                         .inflate(R.layout.fragment_detail, bottomSheet, false));
 
+        // Let the presenter know a marker was clicked
+        mMapPresenter.onMarkerClick(id);
+
         // Let the caller know that the click has been consumed
         return true;
+    }
+
+    @Override
+    public void loadPlaceDetails(PlaceDetails place) {
+        // TODO: Load place details in the bottom sheet
     }
 }

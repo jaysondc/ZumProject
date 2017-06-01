@@ -14,7 +14,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.shakeup.zumproject.BuildConfig;
-import com.shakeup.zumproject.map.MapsContract;
+import com.shakeup.zumproject.CustomCallbacks;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -84,7 +84,7 @@ public class RequestQueueSingleton {
      * Requests data from the server and parses it into an ArrayList of results for each restaurant.
      * This request is simply searches for sushi restaurants in San Francisco
      */
-    public void requestResults(final MapsContract.PlacesResultsCallback placesResultsCallback) {
+    public void requestResults(final CustomCallbacks.PlacesResultsCallback placesResultsCallback) {
 
         // Lat/Long of San Francisco - 37.7577,-122.4376
 
@@ -150,5 +150,76 @@ public class RequestQueueSingleton {
         // Add a request to your RequestQueue.
         addToRequestQueue(stringRequest);
     }
+
+    /**
+     * Requests details from the server and parses it into a detail object.
+     */
+    public void requestDetails(final CustomCallbacks.PlacesDetailsCallback placesDetailsCallback,
+                               String id) {
+
+        // Create a request for details
+        // TODO: Change request to detail version
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https")
+                .authority("maps.googleapis.com")
+                .appendPath("maps")
+                .appendPath("api")
+                .appendPath("place")
+                .appendPath("nearbysearch")
+                .appendPath("json")
+                .appendQueryParameter("key", BuildConfig.GOOGLE_PLACES_API_KEY)
+                .appendQueryParameter("location", "37.7577,-122.4376")
+                .appendQueryParameter("keyword", "sushi")
+                .appendQueryParameter("rankby", "distance");
+        String url = builder.build().toString();
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        // Print the response
+                        Log.d(LOG_TAG, "Response Received! Message: " + response);
+
+                        try{
+                            JSONObject jsonObj = new JSONObject(response);
+
+                            JSONArray results = jsonObj.getJSONArray("results");
+
+                            // Store guides in an array
+                            ArrayList<PlaceResult> resultsArray = new ArrayList<>();
+
+                            for(int i = 0; i<results.length(); i++){
+                                // Convert the JSON Object to a PlaceResult object
+                                PlaceResult placeResult =
+                                        new PlaceResult((JSONObject) results.get(i));
+                                resultsArray.add(placeResult);
+                            }
+
+                            Log.d(LOG_TAG, "JSON Parsed! Found " + resultsArray.size() + " results!");
+
+                            // Send the parsed data to the presenter
+                            // placesDetailsCallback.onPlaceDetailsCallback();
+
+                        } catch(Exception e){
+                            Log.d(LOG_TAG, "There was an error parsing the response.");
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(LOG_TAG, "There was a network error.");
+
+                // Let the calling presenter know there was a network error
+                placesDetailsCallback.onPlaceDetailsErrorCallback();
+            }
+        });
+
+        // Add a request to your RequestQueue.
+        addToRequestQueue(stringRequest);
+    }
+
 
 }
